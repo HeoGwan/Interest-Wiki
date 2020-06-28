@@ -147,7 +147,7 @@ function setCategories() {
 
 // 글 작성 시 새로고침, 탭 닫기 방지
 window.onbeforeunload = function() {
-    if (currentPage == pages["create"]) {
+    if (currentPage == pages["create"] || currentPage == pages["update"]) {
         if (confirm("작성하던 글이 저장되지 않습니다.\n정말 탭을 닫으시겠습니까?")) {
             event.returnValue = true;
         } else {
