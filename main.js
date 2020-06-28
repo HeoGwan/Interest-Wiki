@@ -57,12 +57,18 @@ function getCategories() {
 
         // 글 작성 페이지에 있는 카테고리 선택 부분에 추가한다.
         var select_category = document.getElementById("select-category");
+        var update_category = document.getElementById("update-category");
 
-        var option = document.createElement("option");
-        option.value = category;
-        option.innerText = category;
+        var select_option = document.createElement("option");
+        select_option.value = category;
+        select_option.innerText = category;
 
-        select_category.prepend(option);
+        var update_option = document.createElement("option");
+        update_option.value = category;
+        update_option.innerText = category;
+
+        select_category.prepend(select_option);
+        update_category.prepend(update_option);
 
         category = category_list.shift();
     }
@@ -153,7 +159,6 @@ window.onbeforeunload = function() {
 // 글 작성 페이지 이동을 위한 부분
 document.getElementById("create-button").addEventListener("click", function() {
     movePage('create');
-})
 
 loadCommandButtonFunc();
 // 글 작성 버튼(굵게, 기울이기 등)을 눌렀을 때
@@ -176,6 +181,68 @@ function loadCommandButtonFunc() {
                 console.log(selectedText);
             }
         
+            if (buttonType == "bold" || buttonType == "italic" || 
+            buttonType == "strikeThrough" || buttonType == "underline")  {
+                // 목차나 소목차가 아닐 경우 글자 스타일을 변경해준다.
+                if (selectedText.indexOf("===") != -1 || selectedText.indexOf("==") != -1) {
+                    alert("목차나 소목차는 수정하실 수 없습니다.");
+                    return;
+                } else {
+                    document.execCommand(buttonType);
+                }
+            } else if (buttonType == "link") {
+                console.log("링크 붙임");
+                // 선택한 부분 앞 뒤에 [[]]를 붙인다.
+                var node = document.createElement("span");
+                node.innerText = "[[" + selectedText + "]]";
+                
+                selected.deleteContents();
+                selected.insertNode(node);
+                return;
+            }
+
+            document.getElementById("create-content").focus();
+        })
+    })
+}
+
+function loadCommandButtonFunc2() {
+    var commands = document.getElementsByClassName("update-command");
+    [].forEach.call(commands, function(command) {
+        command.addEventListener("click", function() {
+            // bold일 경우 
+            //  this.classList: ["create-command", "bold", value: "create-command bold"]
+            // italic일 경우
+            //  this.classList: ["create-command", "italic", value: "create-command italic"]
+            var buttonType = this.classList[1];
+            console.log(window.getSelection());
+            if (window.getSelection().anchorNode) {
+                selected = window.getSelection().getRangeAt(0);
+                var selectedText = selected.toString();
+                console.log(selectedText);
+            }
+        
+            if (buttonType == "bold" || buttonType == "italic" || 
+            buttonType == "strikeThrough" || buttonType == "underline")  {
+                // 목차나 소목차가 아닐 경우 글자 스타일을 변경해준다.
+                if (selectedText.indexOf("===") != -1 || selectedText.indexOf("==") != -1) {
+                    alert("목차나 소목차는 수정하실 수 없습니다.");
+                    return;
+                } else {
+                    document.execCommand(buttonType);
+                }
+            } else if (buttonType == "link") {
+                console.log("링크 붙임");
+                // 선택한 부분 앞 뒤에 [[]]를 붙인다.
+                var node = document.createElement("span");
+                node.innerText = "[[" + selectedText + "]]";
+                
+                selected.deleteContents();
+                selected.insertNode(node);
+                return;
+            }
+
+            document.getElementById("update-content").focus();
             if (selectedText.indexOf("===") != -1 || selectedText.indexOf("==") != -1) {
                 alert("목차나 소목차는 수정하실 수 없습니다.");
             } else {
@@ -250,14 +317,20 @@ function addCategoryFunc() {
 function categorySelectUpdate(categoryName) {
     // select 요소를 가지고 온다.
     var select_category = document.getElementById("select-category");
+    var update_category = document.getElementById("update-category");
 
     // option을 만든다. (value값은 카테고리 이름으로 정한다.)
-    var option = document.createElement("option");
-    option.value = categoryName;
-    option.innerText = categoryName;
+    var select_option = document.createElement("option");
+    select_option.value = categoryName;
+    select_option.innerText = categoryName;
+
+    var update_option = document.createElement("option");
+    update_option.value = categoryName;
+    update_option.innerText = categoryName;    
 
     // select 요소에 option을 카테고리 없음 위에 추가한다.
-    select_category.prepend(option);
+    select_category.prepend(select_option);
+    update_category.prepend(update_option);
 }
 
 // 카테고리 추가 화면을 끄는 기능
@@ -667,6 +740,11 @@ function getContent(value) {
         }
         content_body.appendChild(content_content);
     }
+    document.getElementById("content-update-button").addEventListener("click", function(){
+        updatePage(content_head.dataset.index);
+        loadCommandButtonFunc2();
+        return;
+    });
 }
 
 
@@ -900,6 +978,19 @@ function contentParsing(parsingString="") {
                 findIndex = parseStr.indexOf("<div>", startIndex);
                 parseStr = parseStr.slice(findIndex);
                 index++;
+            } else if (parseStr.indexOf("<br>") != -1) {
+                if (parseStr.indexOf("<br>") == -1) {
+                    strs[index] = parseStr;
+                    throw new Error("더이상 찾을 문자열이 없습니다.");
+                }
+                findIndex = parseStr.indexOf("<br>");
+
+                // 리스트 변수안에 문자열을 추가한다.
+                strs[index] = parseStr.substring(0, findIndex);
+
+                // 찾은 문자열을 제외하고 남은 문자열을 저장한다.
+                parseStr = parseStr.slice(findIndex + 4);
+                index++;
             } else {
                 console.log("시작");
                 // 붙여넣기를 하지 않을 경우 처음은 <div>로 시작하지 않는다.
@@ -1072,6 +1163,171 @@ function contentParsing(parsingString="") {
             element.push(elementClass, elementName, elementContent);
         }
     }
+}
+
+function updatePage(value) {
+    movePage('update');
+
+    var content = JSON.parse(localStorage.getItem("contents"))[value];
+
+    var content_head = document.getElementById("content-head");
+    content_head.dataset.index = value;
+
+    var update_content = document.getElementById("update-content");
+    update_content.innerHTML = "";
+    var update_title = document.getElementById("update-title");
+    update_title.value = "";
+
+    var contents = JSON.parse(content["html"]);
+    for (var i in contents) {
+        if (contents[i][0] == "toc-line") {
+            if (contents[i][2].indexOf("class='havent_content_link'") != -1 || 
+            contents[i][2].indexOf("class='content_link'") != -1) {
+                var contentStr = "";
+
+                if (contents[i][2].indexOf("href") == -1) {
+                    // 내부 링크
+                    contentStr = contents[i][2].slice(contents[i][2].indexOf(">", 8) + 1, contents[i][2].indexOf("</", 10));
+                    update_content.innerText += "[[" + contentStr + "]]" + "\n";
+                } else {
+                    // 외부 링크
+                    var linkPart = contents[i][2].indexOf("href") + 6;
+                    var linkStr = contents[i][2].slice(linkPart, contents[i][2].indexOf("'", linkPart));
+                    contentStr = contents[i][2].slice(contents[i][2].indexOf(">", 8) + 1, contents[i][2].indexOf("</", 10));
+                    update_content.innerText += "[[" + linkStr + "|" + contentStr + "]]" + "\n";
+                }
+            } else if (contents[i][2].indexOf("class='content_list'") != -1) {
+                var contentStr = contents[i][2].slice(contents[i][2].lastIndexOf(">") + 1);
+                update_content.innerText += "*" + contentStr + "\n";
+            } else {
+                update_content.innerText += contents[i][2] + "\n";
+            }
+        } else if (contents[i][0] == "toc-big") {
+            update_content.innerText += "==" + contents[i][2] + "==" + "\n";
+        } else if (contents[i][0] == "toc-small") {
+            update_content.innerText += "===" + contents[i][2] + "===" + "\n";
+        }
+    }
+    update_title.value = content["title"];
+    update_title.innerText = content["title"];
+
+    document.getElementById("cancel").addEventListener("click", function(){
+        prevPage();
+    });
+
+    document.getElementById("content-update").addEventListener("click", function(){
+        updateContent(content_head.dataset.index);
+        loadCommandButtonFunc2();
+    });
+}
+
+// 저장
+function updateContent(value) {
+
+    // 제목, 카테고리, 내용 가져오기
+    var title = document.getElementById("update-title");
+    var category = document.getElementById("update-category");
+    var content = document.getElementById("update-content");
+
+    // 각 요소의 값들만 가져온다.
+    var update_title = title.value;
+    var update_category = category.value;
+    var update_content = content.innerText;
+    var update_content_html = content.innerHTML;
+
+    // 타이틀의 글자 수를 검사한다.
+    if (titleStrLengthCheck()) {
+        return;
+    }
+
+    /* 만약 비어있는 경우에 저장을 누르면 이상하게 작동하므로
+    경고 문구를 띄워준다. */
+    if (update_title == "") {
+        // 제목이 비어있을 경우
+        alert("제목이 입력되지 않았습니다.\n제목을 입력해주세요.");
+        return;
+    }
+
+    if (update_content == "") {
+        // 내용이 비어있을 경우
+        alert("내용이 입력되지 않았습니다.\n내용을 입력해주세요.");
+        return;
+    }
+
+    // 제목, 카테고리, 내용을 객체로 저장함
+    saveData["title"] = update_title;
+    saveData["category"] = update_category;
+    saveData["content"] = convertContent(update_content);
+    saveData["html"] = contentParsing(update_content_html);
+    
+    var update_head = document.getElementById("update-head");
+    update_head.dataset.content = value;
+
+    // 객체 저장
+    if (localStorage.getItem("contents") != null) {
+        var tempContent = JSON.parse(localStorage.getItem("contents"));
+        localStorage.removeItem("contents");
+        delete tempContent[update_head.dataset.content];
+        tempContent[sectionValue] = saveData;
+        localStorage.setItem("contents", JSON.stringify(tempContent));
+    } else {
+        var tempContent = {};
+        tempContent[sectionValue] = saveData;
+        localStorage.removeItem("contents");
+        delete tempContent[update_head.dataset.index]
+        localStorage.setItem("contents", JSON.stringify(tempContent));
+    }
+
+    /* new-content에 새로운 포스트 저장 */
+    //최근 글 부모 요소 가져오기
+    var new_contents = document.getElementById("new-contents");
+
+    // 새로운 콘텐츠의 부모 요소 가져오기
+    var new_content = document.createElement("div");
+    new_content.setAttribute("class", "new-content");
+    new_content.setAttribute("onclick", "getContent(" + sectionValue + ")");
+    new_content.dataset.index = sectionValue;
+
+    // 최근 글 타이틀 설정
+    var new_content_title = document.createElement("div");
+    new_content_title.setAttribute("class", "new-content-title");
+    new_content_title.innerText = checkString(saveData["title"], 15, "title");
+    new_content.appendChild(new_content_title);
+
+
+    /* 카테고리 설정 */
+    // if (update_category != "none"){
+    //     addCategory(update_category);
+
+    //     // 저장된 카테고리 스토리지에 저장
+    //     localStorage.setItem("categories", JSON.stringify(categoryList));
+    // }
+
+    /* 최근 글 본문 설정 */
+    var new_content_content = document.createElement("p");
+    new_content_content.setAttribute("class", "new-content-content");
+
+    // 첫 번째 글자는 강조를 하고 그 이후 160자 까지만 가져온다.
+    // 글자수 검사
+    new_content_content.innerHTML = "&emsp;" + checkString(saveData["content"]);
+
+    // 최근 글 타이틀과 본문을 최근 글 자식 요소로 추가한다.
+    new_content.appendChild(new_content_content);
+    
+    /* 구분선 추가 */
+    var hr = document.createElement("hr");
+    new_content.appendChild(hr);
+
+    // 최근 글에 새롭게 작성된 글을 추가한다.
+    new_contents.prepend(new_content);
+
+    // 현재까지 저장된 sectionValue 저장
+    localStorage.setItem("sectionValue", ++sectionValue);
+
+    loadCategories();
+    /* 저장이 완료되면 최근 글 페이지로 돌아가고 제목, 카테고리, 내용 부분이 초기화 되며
+    이전 페이지로 돌아가게 된다. */
+    window.location.reload(true);
 }
 
 // 카테고리 삭제

@@ -181,6 +181,45 @@
                     </div>
                 </article>
 
+                <article id="update-screen">
+                <!-- 수정 페이지 -->
+                    <div id="update-form">
+                        <div id="update-head">
+                            <input type="text" id="update-title">
+                            <!-- 카테고리 선택 -->
+                            <select id="update-category">
+                                <option id="category-update" value="none">카테고리 없음</option>
+                            </select>
+                        </div>
+                        <div id="update-body">
+                            <div id="update-commands">
+                               <button class="update-command bold">
+                                    <b>굵게</b>
+                                </button>
+                                <button class="update-command italic">
+                                    <i>기울이기</i>
+                                </button>
+                                <button class="update-command strikeThrough">
+                                    <del>취소선</del>
+                                </button>
+                                <button class="update-command underline">
+                                    <ins>밑줄</ins>
+                                </button>
+                                <button class="update-command link">
+                                    <i class="fa fa-paperclip fa-flip-horizontal"></i>
+                                    링크
+                                </button>
+                                <!-- ... -->
+                            </div>
+                            <div id="update-content" contenteditable="true"></div>
+                        </div>
+                        <div id="update-foot">
+                            <button id="cancel">취소하기</button>
+                            <button id="content-update">수정하기</button>
+                        </div>
+                    </div>
+                </article>
+
                 <article id="main-search-screen">
                     <button class="prev" onclick="prevPage()"><</button>
                     <!-- 검색 페이지 -->

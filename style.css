@@ -821,3 +821,92 @@ aside {
     font-size: 6pt;
     margin-left: 10pt;
 }
+
+
+/* 수정 페이지 */
+#update-screen {
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+#update-form {
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+}
+
+/* 글 수정 첫 부분 */
+#update-head, #update-body {
+    margin-bottom: 15px;
+}
+
+#update-head {
+    display: flex;
+    align-items: center;
+}
+
+#update-head #update-title {
+    width: 70%;
+    padding: 4pt;
+    margin-right: 10px;
+}
+
+#update-head #update-category {
+    line-height: 30px;
+    border: 1px solid black;
+    padding: 5px 10px;
+    width: 13%;
+    text-align-last: center;
+}
+
+/* 글 수정 중간 */
+#update-body, #update-foot {
+    padding-left: 5px;
+}
+
+#update-body {
+    height: 80%;
+}
+
+#update-body #update-commands {
+    height: 7%;
+    margin-bottom: 10px;
+}
+
+#update-commands .update-command {
+    float: left;
+    background-color: white;
+    border: 1px solid black;
+    height: 30px;
+    font-size: 14pt;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#update-body #update-content {
+    border: 1px solid black;
+    padding: 5px;
+    height: 85%;
+    width: 99%;
+    overflow: auto;
+}
+
+
+/* 글 수정 끝 부분 */
+#update-foot {
+    float: right;
+}
+
+#update-foot #content-update {
+    border: 1px solid black;
+    background-color: white;
+    padding: 10px 20px;
+}
+
+#update-foot #cancel {
+    border: 1px solid black;
+    background-color: white;
+    padding: 10px 20px;
+}
