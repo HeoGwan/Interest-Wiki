@@ -159,37 +159,37 @@ window.onbeforeunload = function() {
 // 글 작성 페이지 이동을 위한 부분
 document.getElementById("create-button").addEventListener("click", function() {
     movePage('create');
+})
 
-loadCommandButtonFunc();
 // 글 작성 버튼(굵게, 기울이기 등)을 눌렀을 때
 // 목차 혹은 소목차일 경우 굵게, 기울이기 등을 막기 위한 함수
-function loadCommandButtonFunc() {
-    var commands = document.getElementsByClassName("create-command");
-    [].forEach.call(commands, function(command) {
-        command.addEventListener("click", function() {
-            // bold일 경우 
-            //  this.classList: ["create-command", "bold", value: "create-command bold"]
-            // italic일 경우
-            //  this.classList: ["create-command", "italic", value: "create-command italic"]
-            var buttonType = this.classList[1];
-            var selection = window.getSelection();
-            var range = selection.getRangeAt(0);
-            console.log(window.getSelection());
-            if (selection.anchorNode) {
-                selected = range;
-                var selectedText = selected.toString();
-                console.log(selectedText);
-            }
-        
+var commands = document.getElementsByClassName("create-command");
+[].forEach.call(commands, function(command) {
+    command.addEventListener("click", function() {
+        // bold일 경우 
+        //  this.classList: ["create-command", "bold", value: "create-command bold"]
+        // italic일 경우
+        //  this.classList: ["create-command", "italic", value: "create-command italic"]
+        var buttonType = this.classList[1];
+        var selection = window.getSelection();
+        var range = selection.getRangeAt(0);
+        console.log(window.getSelection());
+        if (selection.anchorNode) {
+            selected = range;
+            var selectedText = selected.toString();
+            console.log(selectedText);
+        }
+    
+
+        if (selectedText.indexOf("===") != -1 || selectedText.indexOf("==") != -1) {
+            alert("목차나 소목차는 수정하실 수 없습니다.");
+            return;
+        } else {
             if (buttonType == "bold" || buttonType == "italic" || 
             buttonType == "strikeThrough" || buttonType == "underline")  {
                 // 목차나 소목차가 아닐 경우 글자 스타일을 변경해준다.
-                if (selectedText.indexOf("===") != -1 || selectedText.indexOf("==") != -1) {
-                    alert("목차나 소목차는 수정하실 수 없습니다.");
-                    return;
-                } else {
-                    document.execCommand(buttonType);
-                }
+                console.log("스타일 변환");
+                document.execCommand(buttonType);
             } else if (buttonType == "link") {
                 console.log("링크 붙임");
                 // 선택한 부분 앞 뒤에 [[]]를 붙인다.
@@ -198,39 +198,33 @@ function loadCommandButtonFunc() {
                 
                 selected.deleteContents();
                 selected.insertNode(node);
-                return;
             }
-
             document.getElementById("create-content").focus();
-        })
+        }
     })
-}
+})
 
-function loadCommandButtonFunc2() {
-    var commands = document.getElementsByClassName("update-command");
-    [].forEach.call(commands, function(command) {
-        command.addEventListener("click", function() {
-            // bold일 경우 
-            //  this.classList: ["create-command", "bold", value: "create-command bold"]
-            // italic일 경우
-            //  this.classList: ["create-command", "italic", value: "create-command italic"]
-            var buttonType = this.classList[1];
-            console.log(window.getSelection());
-            if (window.getSelection().anchorNode) {
-                selected = window.getSelection().getRangeAt(0);
-                var selectedText = selected.toString();
-                console.log(selectedText);
-            }
-        
+var commands = document.getElementsByClassName("update-command");
+[].forEach.call(commands, function(command) {
+    command.addEventListener("click", function() {
+        // bold일 경우 
+        //  this.classList: ["create-command", "bold", value: "create-command bold"]
+        // italic일 경우
+        //  this.classList: ["create-command", "italic", value: "create-command italic"]
+        var buttonType = this.classList[1];
+        console.log(window.getSelection());
+        if (window.getSelection().anchorNode) {
+            selected = window.getSelection().getRangeAt(0);
+            var selectedText = selected.toString();
+            console.log(selectedText);
+        }
+    
+        if (selectedText.indexOf("===") != -1 || selectedText.indexOf("==") != -1) {
+            alert("목차나 소목차는 수정하실 수 없습니다.");
+        } else {
             if (buttonType == "bold" || buttonType == "italic" || 
             buttonType == "strikeThrough" || buttonType == "underline")  {
-                // 목차나 소목차가 아닐 경우 글자 스타일을 변경해준다.
-                if (selectedText.indexOf("===") != -1 || selectedText.indexOf("==") != -1) {
-                    alert("목차나 소목차는 수정하실 수 없습니다.");
-                    return;
-                } else {
-                    document.execCommand(buttonType);
-                }
+                document.execCommand(buttonType);
             } else if (buttonType == "link") {
                 console.log("링크 붙임");
                 // 선택한 부분 앞 뒤에 [[]]를 붙인다.
@@ -239,29 +233,11 @@ function loadCommandButtonFunc2() {
                 
                 selected.deleteContents();
                 selected.insertNode(node);
-                return;
             }
-
-            document.getElementById("update-content").focus();
-            if (selectedText.indexOf("===") != -1 || selectedText.indexOf("==") != -1) {
-                alert("목차나 소목차는 수정하실 수 없습니다.");
-            } else {
-                if (buttonType == "bold" || buttonType == "italic" || 
-                buttonType == "strikeThrough" || buttonType == "underline")  {
-                    document.execCommand(buttonType);
-                } else if (buttonType == "link") {
-                    console.log("링크 붙임");
-                    // 선택한 부분 앞 뒤에 [[]]를 붙인다.
-                    var node = document.createElement("span");
-                    node.innerText = "[[" + selectedText + "]]";
-                    
-                    selected.deleteContents();
-                    selected.insertNode(node);
-                }
-            }
-        })
+        }
+        document.getElementById("update-content").focus();
     })
-}
+})
 
 // 카테고리 추가 버튼을 눌렀을 때
 document.getElementById("create-category-button").addEventListener("click", function() {
@@ -690,7 +666,105 @@ function getContent(value) {
             if (value_class == toc.line) {
                 var content_div = document.createElement("div");
                 content_div.setAttribute("class", value_class + " " + contentLine++);
-                content_div.innerHTML = value_content;
+                
+                var prev_text = "";
+                var main_text = "";
+                var next_text = "";
+                if (value_content[0] == "*") {
+                    console.log("리스트");
+                    value_content = value_content.replace("*", "<span class='content_list'>&nbsp;&nbsp;&nbsp;&nbsp;●</span>");
+                    console.log(value_content);
+                }
+                // 문장 안에 링크가 있나 없나 검사해야 함
+                if (value_content.indexOf("[[") == -1) {
+                    // 링크가 없으면 바로 저장
+                    if (value_content[0] == "<") {
+                        value_content = getString(value_content);
+                    }
+                    content_div.innerHTML = value_content;
+                } else {
+                    var linkStr = "";
+
+                    // 만약 링크가 있다면 여러개가 있을 수 있으므로
+                    // 반복해서 검사한다.
+                    while (value_content != "") {
+                        // str이 빌 때 까지 검사한다.
+                        try {
+                            if (value_content.indexOf("[[") == -1) {
+                                // 만약 링크가 더 없으면 남은 문자열을 다 더한다.
+                                content_div.innerHTML += value_content;
+                                throw new Error("더이상 분석할 문자열이 없습니다.");
+                            } else {
+                                console.log("분석 중..");
+                                // [[ 앞에 있는 문자열을 먼저 담는다.
+                                content_div.innerHTML += value_content.substring(0, value_content.indexOf("[["));
+
+                                // [[ 앞에 있는 문자열을 잘라낸다.
+                                // [[ 뒤에 있는 문자열을 가져옴
+                                value_content = value_content.slice(value_content.indexOf("[["));
+                                if (value_content[0] == "<") {
+                                    value_content = getString(value_content);
+                                }
+
+                                // 링크에 관련된 문자열을 가지고 온다.
+                                linkStr = value_content.substring(2, value_content.indexOf("]]"));
+                                console.log("linkStr: " + linkStr);
+
+                                // 링크가 외부 링크인지(|가 있는지)
+                                // 내부 링크인지 (|가 없는지) 검사한다.
+                                if (linkStr.indexOf("|") != -1) {
+                                    // 외부 링크 (|가 있다)
+                                    console.log("외부 링크 거는 중..");
+                                    if (linkStr.substr(0, 2) == "</") {
+                                        linkStr = linkStr.slice(linkStr.indexOf("<", 2));
+                                    }
+
+                                    var link = linkStr.slice(0, linkStr.indexOf("|")); // 링크 부분
+                                    if (link.substr(0, 2) == "<a") {
+                                        link = link.slice(link.indexOf(">") + 1, link.indexOf("<", 3));
+                                    }
+
+                                    var showStr = linkStr.slice(linkStr.indexOf("|") + 1); // 글자 부분
+                                    
+                                    // <a class='content=link' href='link'>showStr</a>
+                                    content_div.innerHTML += "<a class='content_link' href='" + link + "' target='_blank'>" + showStr + "</a>";
+                                    console.log("link: " + link);
+
+                                } else {
+                                    console.log("내부 링크 거는 중..");
+                                    // 내부 링크 (|가 없다)
+                                    // 입력한 값과 일치하는 제목이 있을 경우
+                                    // 해당 글로 링크를 건다. (getContent)
+                                    var findContent = function() {
+                                        var contents = JSON.parse(localStorage.getItem("contents"));
+                                        for (var i = 0; i < sectionValue; i++) {
+                                            if (contents[i] != null) {
+                                                if (contents[i]["title"] === linkStr) {
+                                                    // 만약 타이틀이 일치하다면 해당 글로 링크를 건다.
+                                                    // ex) <span class='content_link' onclick='getContent(0)'>ABC</span>
+                                                    content_div.innerHTML += "<span class='content_link' onclick='getContent(" + i + ")'>" + linkStr + "</span>";
+                                                    return true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (!findContent()) {
+                                        // 만약 해당되는 글이 없을 경우
+                                        content_div.innerHTML += "<span class='havent_content_link'>" + linkStr + "</span>";
+                                    }
+                                } // if (linkStr.indexOf("|"))
+
+                                // 다시 검사하기 위해 ]] 뒤에 있는 문자열을 가지고 온다.
+                                value_content = value_content.slice(value_content.indexOf("]]") + 2);
+                            } //if (str.indexOf("[[") == -1)
+                        } catch (e) {
+                            console.log(e);
+                            value_content = "";
+                        }
+                    } // while(value_content != "")
+                } //if (value_content.indexOf("[[") == -1)
+
+                // content_div.innerHTML = value_content;
                 
                 content_content.appendChild(content_div);
             } else if (value_class == toc.big) {
@@ -740,13 +814,7 @@ function getContent(value) {
         }
         content_body.appendChild(content_content);
     }
-    document.getElementById("content-update-button").addEventListener("click", function(){
-        updatePage(content_head.dataset.index);
-        loadCommandButtonFunc2();
-        return;
-    });
 }
-
 
 /* 검색 기능 */
 document.getElementById("search-text").onkeydown = function() {
@@ -1044,12 +1112,8 @@ function contentParsing(parsingString="") {
         function strParsing(str="") {
             console.log("strParsing");
             str.replace(/^ /gi, "");
-            if (str[0] == "*") {
-                console.log("리스트");
-                str = str.replace("*", "<span class='content_list'>●</span>");
-                console.log(str);
-            }
             console.log("str: " + str);
+            str = getString(str);
 
             var elementClass = "";
             var elementName = "";
@@ -1073,91 +1137,7 @@ function contentParsing(parsingString="") {
             } else {
                 elementClass = toc.line;
                 elementName = "";
-
-                // 문장 안에 링크가 있나 없나 검사해야 함
-                if (str.indexOf("[[") == -1) {
-                    // 링크가 없으면 바로 저장
-                    elementContent = str;
-                } else {
-                    var linkStr = "";
-
-                    // 만약 링크가 있다면 여러개가 있을 수 있으므로
-                    // 반복해서 검사한다.
-                    while (str != "") {
-                        // str이 빌 때 까지 검사한다.
-                        try {
-                            if (str.indexOf("[[") == -1) {
-                                // 만약 링크가 더 없으면 남은 문자열을 다 더한다.
-                                elementContent += str;
-                                throw new Error("더이상 분석할 문자열이 없습니다.");
-                            } else {
-                                console.log("분석 중..");
-                                // [[ 앞에 있는 문자열을 먼저 담는다.
-                                // TODO 에러 발생
-                                elementContent += str.substring(0, str.indexOf("[["));
-
-                                // [[ 앞에 있는 문자열을 잘라낸다.
-                                // [[ 뒤에 있는 문자열을 가져옴
-                                str = str.slice(str.indexOf("[["));
-
-                                // 링크에 관련된 문자열을 가지고 온다.
-                                linkStr = str.substring(2, str.indexOf("]]"));
-                                console.log("linkStr: " + linkStr);
-
-                                // 링크가 외부 링크인지(|가 있는지)
-                                // 내부 링크인지 (|가 없는지) 검사한다.
-                                if (linkStr.indexOf("|") != -1) {
-                                    // 외부 링크 (|가 있다)
-                                    console.log("외부 링크 거는 중..");
-                                    if (linkStr.substr(0, 2) == "</") {
-                                        linkStr = linkStr.slice(linkStr.indexOf("<", 2));
-                                    }
-
-                                    var link = linkStr.slice(0, linkStr.indexOf("|")); // 링크 부분
-                                    if (link.substr(0, 2) == "<a") {
-                                        link = link.slice(link.indexOf(">") + 1, link.indexOf("<", 3));
-                                    }
-
-                                    var showStr = linkStr.slice(linkStr.indexOf("|") + 1); // 글자 부분
-                                    
-                                    // <a class='content=link' href='link'>showStr</a>
-                                    elementContent += "<a class='content_link' href='" + link + "' target='_blank'>" + showStr + "</a>";
-                                    console.log("link: " + link);
-
-                                } else {
-                                    console.log("내부 링크 거는 중..");
-                                    // 내부 링크 (|가 없다)
-                                    // 입력한 값과 일치하는 제목이 있을 경우
-                                    // 해당 글로 링크를 건다. (getContent)
-                                    var findContent = function() {
-                                        var contents = JSON.parse(localStorage.getItem("contents"));
-                                        for (var i = 0; i < sectionValue; i++) {
-                                            if (contents[i] != null) {
-                                                if (contents[i]["title"] === linkStr) {
-                                                    // 만약 타이틀이 일치하다면 해당 글로 링크를 건다.
-                                                    // ex) <span class='content_link' onclick='getContent(0)'>ABC</span>
-                                                    elementContent += "<span class='content_link' onclick='getContent(" + i + ")'>" + linkStr + "</span>";
-                                                    return true;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    if (!findContent()) {
-                                        // 만약 해당되는 글이 없을 경우
-                                        elementContent += "<span class='havent_content_link'>" + linkStr + "</span>";
-                                    }
-                                } // if (linkStr.indexOf("|"))
-
-                                // 다시 검사하기 위해 ]] 뒤에 있는 문자열을 가지고 온다.
-                                str = str.slice(str.indexOf("]]") + 2);
-                            } //if (str.indexOf("[[") == -1)
-                            console.log(elementContent);
-                        } catch (e) {
-                            console.log(e);
-                            str = "";
-                        }
-                    } // while(str != "")
-                } //if (str.indexOf("[[") == -1)
+                elementContent = str;
             }
 
             element.push(elementClass, elementName, elementContent);
@@ -1165,9 +1145,35 @@ function contentParsing(parsingString="") {
     }
 }
 
+function getString(str) {
+    isFoundStr = false;
+    while (!isFoundStr) {
+        try {
+            if (str[0] != "<") {
+                if (str.indexOf(/^<d?s?/, 2) != -1) {
+                    str = str.slice(0, str.indexOf("<"));
+                }
+                throw new Error("문자열을 찾았습니다.");
+            } else {
+                str = str.slice(str.indexOf(">") + 1);
+            }
+        } catch (e) {
+            console.log(e);
+            isFoundStr = !isFoundStr;
+        }
+    }
+
+    console.log(str);
+    return str;
+}
+
+document.getElementById("content-update-button").addEventListener("click", function(){
+    var content_head = document.getElementById("content-head");
+    updatePage(content_head.dataset.index);
+});
+
 function updatePage(value) {
     movePage('update');
-
     var content = JSON.parse(localStorage.getItem("contents"))[value];
 
     var content_head = document.getElementById("content-head");
@@ -1177,49 +1183,71 @@ function updatePage(value) {
     update_content.innerHTML = "";
     var update_title = document.getElementById("update-title");
     update_title.value = "";
+    var update_category = document.getElementById("update-category");
+    update_category.value = content["category"];
 
     var contents = JSON.parse(content["html"]);
+    console.log("수정 글 불러오기");
+    console.log(contents);
     for (var i in contents) {
+        console.log("수정 글 불러오기 시작");
+        console.log(contents[i][2]);
+        contentText = contents[i][2];
         if (contents[i][0] == "toc-line") {
-            if (contents[i][2].indexOf("class='havent_content_link'") != -1 || 
-            contents[i][2].indexOf("class='content_link'") != -1) {
+            if (contentText.indexOf("class='havent_content_link'") != -1 || 
+            contentText.indexOf("class='content_link'") != -1) {
+                console.log("링크 관련")
                 var contentStr = "";
+                var prevStr = "";
+                var nextStr = "";
 
-                if (contents[i][2].indexOf("href") == -1) {
+                if (contentText.indexOf("href") == -1) {
+                    console.log("내부 링크");
                     // 내부 링크
-                    contentStr = contents[i][2].slice(contents[i][2].indexOf(">", 8) + 1, contents[i][2].indexOf("</", 10));
-                    update_content.innerText += "[[" + contentStr + "]]" + "\n";
+                    prevStr = contentText.slice(0, contentText.indexOf("<span"));
+                    contentStr = contentText.slice(contentText.indexOf(">", contentText.indexOf("onclick")) + 1, contentText.indexOf("</", contentText.indexOf("onclick")));
+                    nextStr = contentText.slice(contentText.lastIndexOf(">") + 1);
+                    console.log(contentStr);
+                    update_content.innerHTML += prevStr + "[[" + contentStr + "]]" + nextStr + "<br>";
                 } else {
+                    console.log("외부 링크");
                     // 외부 링크
-                    var linkPart = contents[i][2].indexOf("href") + 6;
-                    var linkStr = contents[i][2].slice(linkPart, contents[i][2].indexOf("'", linkPart));
-                    contentStr = contents[i][2].slice(contents[i][2].indexOf(">", 8) + 1, contents[i][2].indexOf("</", 10));
-                    update_content.innerText += "[[" + linkStr + "|" + contentStr + "]]" + "\n";
+                    prevStr = contentText.slice(0, contentText.indexOf("<"));
+                    var linkPart = contentText.indexOf("href") + 6;
+                    var linkStr = contentText.slice(linkPart, contentText.indexOf("'", linkPart));
+                    console.log(linkStr);
+                    contentStr = contentText.slice(contentText.indexOf(">", 8) + 1, contentText.indexOf("</", 10));
+                    console.log(contentStr);
+                    nextStr = contentText.slice(contentText.lastIndexOf(">") + 1);
+                    update_content.innerHTML += prevStr + "[[" + linkStr + "|" + contentStr + "]]" + nextStr + "<br>";
                 }
-            } else if (contents[i][2].indexOf("class='content_list'") != -1) {
-                var contentStr = contents[i][2].slice(contents[i][2].lastIndexOf(">") + 1);
-                update_content.innerText += "*" + contentStr + "\n";
+            } else if (contentText.indexOf("class='content_list'") != -1) {
+                console.log("목록 관련")
+                var contentStr = contentText.slice(contentText.lastIndexOf(">") + 1);
+                update_content.innerHTML += "*" + contentStr + "<br>";
             } else {
-                update_content.innerText += contents[i][2] + "\n";
+                console.log("그냥 저장");
+                update_content.innerHTML += contentText + "<br>";
             }
         } else if (contents[i][0] == "toc-big") {
-            update_content.innerText += "==" + contents[i][2] + "==" + "\n";
+            update_content.innerHTML += "==" + contentText + "==" + "<br>";
         } else if (contents[i][0] == "toc-small") {
-            update_content.innerText += "===" + contents[i][2] + "===" + "\n";
+            update_content.innerHTML += "===" + contentText + "===" + "<br>";
         }
     }
     update_title.value = content["title"];
     update_title.innerText = content["title"];
-
-    document.getElementById("cancel").addEventListener("click", function(){
-        prevPage();
-    });
-
-    document.getElementById("content-update").addEventListener("click", function(){
-        updateContent(content_head.dataset.index);
-        loadCommandButtonFunc2();
-    });
 }
+
+document.getElementById("cancel").addEventListener("click", function(){
+    prevPage();
+});
+
+document.getElementById("content-update").addEventListener("click", function(){
+    var content_head = document.getElementById("content-head");
+    updateContent(content_head.dataset.index);
+});
+
 
 // 저장
 function updateContent(value) {
@@ -1258,6 +1286,7 @@ function updateContent(value) {
     saveData["title"] = update_title;
     saveData["category"] = update_category;
     saveData["content"] = convertContent(update_content);
+    console.log("수정 파싱 시작");
     saveData["html"] = contentParsing(update_content_html);
     
     var update_head = document.getElementById("update-head");
@@ -1296,12 +1325,12 @@ function updateContent(value) {
 
 
     /* 카테고리 설정 */
-    // if (update_category != "none"){
-    //     addCategory(update_category);
+    if (update_category != "none"){
+        addCategory(update_category);
 
-    //     // 저장된 카테고리 스토리지에 저장
-    //     localStorage.setItem("categories", JSON.stringify(categoryList));
-    // }
+        // 저장된 카테고리 스토리지에 저장
+        localStorage.setItem("categories", JSON.stringify(categoryList));
+    }
 
     /* 최근 글 본문 설정 */
     var new_content_content = document.createElement("p");
@@ -1327,7 +1356,12 @@ function updateContent(value) {
     loadCategories();
     /* 저장이 완료되면 최근 글 페이지로 돌아가고 제목, 카테고리, 내용 부분이 초기화 되며
     이전 페이지로 돌아가게 된다. */
-    window.location.reload(true);
+    // window.location.reload(true);
+    title.value = "";
+    category.value = "";
+    content.innerHTML = "";
+    prevPage();
+    prevPage(true);
 }
 
 // 카테고리 삭제
