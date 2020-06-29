@@ -503,6 +503,7 @@ function createCategory(parent, categoryName) {
     li.appendChild(category_delete);
     li.appendChild(span);
     parent.appendChild(li);
+    deleteCategory();
 }
 
 function saveContentData() {
@@ -1365,30 +1366,50 @@ function updateContent(value) {
 }
 
 // 카테고리 삭제
-var category_delete_buttons = document.getElementsByClassName("category-delete");
-[].forEach.call(category_delete_buttons, function(category_delete) {
-    category_delete.addEventListener("click", function() {
-        var category = this.parentNode.dataset.category;
+deleteCategory();
+function deleteCategory() {
+    var category_delete_buttons = document.getElementsByClassName("category-delete");
+    [].forEach.call(category_delete_buttons, function(category_delete) {
+        category_delete.addEventListener("click", function() {
+            var category = this.parentNode.dataset.category;
 
-        // 저장된 콘텐츠 중 해당되는 카테고리를 없앤다.
-        var categories = JSON.parse(localStorage.getItem("categories"));
-        localStorage.removeItem("categories");
-        categories.splice(categories.indexOf(category), 1);
-        localStorage.setItem("categories", JSON.stringify(categories));
+            // 저장된 콘텐츠 중 해당되는 카테고리를 없앤다.
+            var categories = JSON.parse(localStorage.getItem("categories"));
+            localStorage.removeItem("categories");
+            categories.splice(categories.indexOf(category), 1);
+            localStorage.setItem("categories", JSON.stringify(categories));
 
-        // 저장된 콘텐츠 중 해당되는 카테고리와 동일한 글의 카테고리를 없앤다.
-        var contents = JSON.parse(localStorage.getItem("contents"));
-        localStorage.removeItem("contents");
-        for (var i in contents) {
-            if(contents[i]["category"] === category) {
-                contents[i]["category"] = "none";
+            var select_category = document.getElementById("select-category");
+            var update_category = document.getElementById("update-category");
+
+            for (var i = 0; i < select_category.childElementCount - 1; i++) {
+                if (select_category.childNodes[i].value == category) {
+                    select_category.removeChild(select_category.childNodes[i]);
+                    break;
+                }
             }
-        }
-        localStorage.setItem("contents", JSON.stringify(contents));
-        
-        this.parentNode.remove();
+            
+            for (var i = 0; i < update_category.childElementCount - 1; i++) {
+                if (update_category.childNodes[i].value == category) {
+                    update_category.removeChild(update_category.childNodes[i]);
+                    break;
+                }
+            }
+
+            // 저장된 콘텐츠 중 해당되는 카테고리와 동일한 글의 카테고리를 없앤다.
+            var contents = JSON.parse(localStorage.getItem("contents"));
+            localStorage.removeItem("contents");
+            for (var i in contents) {
+                if(contents[i]["category"] === category) {
+                    contents[i]["category"] = "none";
+                }
+            }
+            localStorage.setItem("contents", JSON.stringify(contents));
+            
+            this.parentNode.remove();
+        })
     })
-})
+}
 
 // 본문 삭제
 document.getElementById("content-delete-button").addEventListener("click", function() {
